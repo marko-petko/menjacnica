@@ -3,21 +3,46 @@ const inputEuro = document.getElementById('euro');
 const inputDolar = document.getElementById('dolar');
 const inputFranak = document.getElementById('franak');
 
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
 let mydata = JSON.parse(data);
 let rsd = 1;
 let eur = mydata[0]["SREDNJI KURS"];
 let usd = mydata[15]["SREDNJI KURS"];
 let chf = mydata[13]["SREDNJI KURS"];
 
-inputDinar.addEventListener('input', dinar);
-
-function dinar() {
-    const dinarRSD = parseInt(inputDinar.value);
+var calcRsd = debounce(function(){
+    console.log("calcRsd");
+    const dinarRSD = Number(inputDinar.value);
     const euroE = dinarRSD/eur;
     const usdD = dinarRSD/usd;
     const chfSwiss = dinarRSD/chf;
     setOutput(dinarRSD, euroE, usdD, chfSwiss);
-}
+}, 250);
+
+inputDinar.addEventListener('input', calcRsd);
+
+// function dinar() {
+//     console.log("dinar");
+//     const dinarRSD = parseInt(inputDinar.value);
+//     const euroE = dinarRSD/eur;
+//     const usdD = dinarRSD/usd;
+//     const chfSwiss = dinarRSD/chf;
+//     setOutput(dinarRSD, euroE, usdD, chfSwiss);
+// }
 
 inputEuro.addEventListener('input', euro);
 
