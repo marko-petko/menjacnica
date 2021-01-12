@@ -1,65 +1,54 @@
-const inputDinar = document.getElementById('dinar');
-const inputEuro = document.getElementById('euro');
-const inputDolar = document.getElementById('dolar');
-const inputFranak = document.getElementById('franak');
+class Valuta {
+    constructor(oznakaValute, sifraValute, nazivZemlje, vaziZa, srednjiKurs) {
+        this.oznakaValute = oznakaValute;
+        this.sifraValute = sifraValute;
+        this.nazivZemlje = nazivZemlje;
+        this.vaziZa = vaziZa;
+        this.srednjiKurs = srednjiKurs;
+    }
+}
 
 let mydata = JSON.parse(data);
-let rsd = 1;
-let eur = mydata[0]["SREDNJI KURS"];
-let usd = mydata[15]["SREDNJI KURS"];
-let chf = mydata[13]["SREDNJI KURS"];
+let valute = mydata.map(valuta => new Valuta(valuta["oznakaValute"], valuta["sifraValute"], valuta["nazivZemlje"], valuta["vaziZa"], valuta["srednjiKurs"]));
+console.log(valute);
 
-inputDinar.addEventListener('input', dinar);
+let listaSrednjihKurseva = []; //Empty arrey populate
+console.log(listaSrednjihKurseva);
 
-function dinar() {
-    const dinarRSD = parseInt(inputDinar.value);
-    const euroE = dinarRSD/eur;
-    const usdD = dinarRSD/usd;
-    const chfSwiss = dinarRSD/chf;
-    setOutput(dinarRSD, euroE, usdD, chfSwiss);
-}
-
-inputEuro.addEventListener('input', euro);
-
-function euro() {
-    const euroE = parseInt(inputEuro.value);
-    const dinarRSD = euroE/rsd;    
-    const usdD = euroE/usd;
-    const chfSwiss = euroE/chf;
-    setOutput(dinarRSD, euroE, usdD, chfSwiss);
-}
-
-inputDolar.addEventListener('input', dolar);
-
-function dolar() {
-    const usdD = parseInt(inputDolar.value);
-    const dinarRSD = usdD/rsd;
-    const euroE = usdD/eur;    
-    const chfSwiss = usdD/chf;
-    setOutput(dinarRSD, euroE, usdD, chfSwiss);
-}
-
-inputFranak.addEventListener('input', franak);
-
-function franak() {
-    const chfSwiss = parseInt(inputFranak.value);
-    const dinarRSD = chfSwiss/rsd;
-    const euroE = chfSwiss/eur;
-    const usdD = chfSwiss/usd;    
-    setOutput(dinarRSD, euroE, usdD, chfSwiss);
-}
-
-function setOutput(rsd, eur, usd, chf) {
-    inputDinar.value = rsd;
-    inputEuro.value = eur.toFixed(4);
-    inputDolar.value = usd.toFixed(4);
-    inputFranak.value = chf.toFixed(4);
-}
-
-$(document).ready(function() {
-    let mydata = JSON.parse(data);
-    console.log(mydata);
+mydata.forEach(function(data) {
+    let sKurs = new Valuta(data["oznakaValute"], data["sifraValute"], data["nazivZemlje"], data["vaziZa"], data["srednjiKurs"]);
+    console.log(sKurs);
+    listaSrednjihKurseva.push(sKurs);
 });
 
+let eur = valute.find(v => v.sifraValute === 978);
+let usd = valute.find(v => v.sifraValute === 840);
+let chf = valute.find(v => v.sifraValute === 756);
 
+function dinarConverter(value) {
+    document.converter.euro.value = Number(value / eur.srednjiKurs).toFixed(4);
+    document.converter.dolar.value = Number(value / usd.srednjiKurs).toFixed(4);
+    document.converter.franak.value = Number(value / chf.srednjiKurs).toFixed(4);
+}
 
+function euroConverter(value) {
+    document.converter.dinar.value = Number(value * eur.srednjiKurs).toFixed(4);
+    document.converter.dolar.value = Number(value * (eur.srednjiKurs / usd.srednjiKurs)).toFixed(4);
+    document.converter.franak.value = Number(value * (eur.srednjiKurs / chf.srednjiKurs)).toFixed(4);
+}
+
+function dolarConverter(value) {
+    document.converter.dinar.value = Number(value * usd.srednjiKurs).toFixed(4);
+    document.converter.euro.value = Number(value * (usd.srednjiKurs / eur.srednjiKurs)).toFixed(4);
+    document.converter.franak.value = Number(value * (usd.srednjiKurs / chf.srednjiKurs)).toFixed(4);
+}
+
+function franakConverter(value) {
+    document.converter.dinar.value = Number(value * chf.srednjiKurs).toFixed(4);
+    document.converter.euro.value = Number(value * (chf.srednjiKurs / eur.srednjiKurs)).toFixed(4);
+    document.converter.dolar.value = Number(value * (chf.srednjiKurs / usd.srednjiKurs)).toFixed(4);
+}
+
+function Reset() {
+    document.getElementById("myForm").reset();
+}
