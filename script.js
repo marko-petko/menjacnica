@@ -8,10 +8,26 @@ class Valuta {
     }
 }
 
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
+
 let mydata = JSON.parse(data);
 let valute = mydata.map(valuta => new Valuta(valuta["oznakaValute"], valuta["sifraValute"], valuta["nazivZemlje"], valuta["vaziZa"], valuta["srednjiKurs"]));
 console.log(valute);
 
+<<<<<<< HEAD
 let listaSrednjihKurseva = []; //Empty arrey populate
 console.log(listaSrednjihKurseva);
 
@@ -20,6 +36,27 @@ mydata.forEach(function(data) {
     console.log(sKurs);
     listaSrednjihKurseva.push(sKurs);
 });
+=======
+var calcRsd = debounce(function(){
+    console.log("calcRsd");
+    const dinarRSD = Number(inputDinar.value);
+    const euroE = dinarRSD/eur;
+    const usdD = dinarRSD/usd;
+    const chfSwiss = dinarRSD/chf;
+    setOutput(dinarRSD, euroE, usdD, chfSwiss);
+}, 250);
+
+inputDinar.addEventListener('input', calcRsd);
+
+// function dinar() {
+//     console.log("dinar");
+//     const dinarRSD = parseInt(inputDinar.value);
+//     const euroE = dinarRSD/eur;
+//     const usdD = dinarRSD/usd;
+//     const chfSwiss = dinarRSD/chf;
+//     setOutput(dinarRSD, euroE, usdD, chfSwiss);
+// }
+>>>>>>> 6bdb282f1803e640d8ab8c8146e5db94626f0d4a
 
 let eur = valute.find(v => v.sifraValute === 978);
 let usd = valute.find(v => v.sifraValute === 840);
